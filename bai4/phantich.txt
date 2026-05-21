@@ -1,0 +1,15 @@
+BẢNG SO SÁNH @RestControllerAdvice VÀ @AfterThrowing
+
+@RestControllerAdvice
+Có phạm vi hoạt động:Nằm ở tầng Web/Controller. Đón đầu các ngoại lệ bắn ra từ Controller trước khi phản hồi về Client.
+Khả năng can thiệp cấu trúc JSON trả về : Xuất sắc. Được thiết kế chuyên biệt để ghi đè HTTP Body, HTTP Status và trả về các Object JSON tùy biến.
+Khả năng ghi log ngầm: Tốt, nhưng nếu ghi log ở đây sẽ bị lẫn lộn giữa log hệ thống và log nghiệp vụ của tầng dưới.
+
+@AfterThrowing
+Có phạm vi hoạt động: Nằm ở các tầng được cấu hình Pointcut (thường là Service/Repository), bắt lỗi ngay khi hàm vừa ném ra.
+Khả năng can thiệp cấu trúc JSON trả về: Không thể. Chỉ bắt được ngoại lệ để xử lý ngầm, không can thiệp được vào luồng HTTP Response của Client.
+Khả năng ghi log ngầm: Xuất sắc. Hoạt động ngầm hoàn toàn độc lập, ghi log chi tiết (StackTrace) ra file/console mà không ảnh hưởng gì tới tầng hiển thị.
+
+KẾT LUẬN LỰA CHỌN:
+- Công cụ làm HTTP Response: Chọn `@RestControllerAdvice` (vì làm chủ được thực thể trả về cho Client, dễ dàng format JSON và ẩn StackTrace).
+- Công cụ làm Audit log: Chọn `@AfterThrowing` (vì bắt lỗi cực nhanh ở tầng thấp Service, gom được StackTrace chi tiết phục vụ việc debug của Dev mà không lộ ra ngoài).
